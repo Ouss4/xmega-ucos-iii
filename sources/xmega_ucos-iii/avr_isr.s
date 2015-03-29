@@ -21,7 +21,7 @@
 
 		.global TickISR
         .global usartc0_rx_isr
-        .global usartf0_rx_isr
+        .global usartd0_rx_isr
 		.global pushbutton_timer_isr
 
 ;********************************************************************************************************
@@ -34,7 +34,7 @@
 		.extern OSIntExit
 
         .extern usartc0_rx_isr_handler
-        .extern usartf0_rx_isr_handler
+        .extern usartd0_rx_isr_handler
 		.extern	pushbutton_timer_isr_handler
 
         .text
@@ -137,9 +137,9 @@ usartc0_rx_isr_1:
 		RETI
 
 ;**********************************************************************************************
-;*                                       USARTF0 Rx ISR
+;*                                       USARTD0 Rx ISR
 ;*
-;* Description: This function is invoked when USARTF0 receives a character
+;* Description: This function is invoked when USARTD0 receives a character
 ;*
 ;* Arguments  : none
 ;*
@@ -150,13 +150,13 @@ usartc0_rx_isr_1:
 ;*                 if (OSIntNesting == 1) {
 ;*                     OSTCBCur->OSTCBStkPtr = SP
 ;*                 }
-;*                 usartf0_rx_isr_handler();
+;*                 usartd0_rx_isr_handler();
 ;*                 OSIntExit();
 ;*                 Restore all registers
 ;*                 Return from interrupt;
 ;**********************************************************************************************
         
-usartf0_rx_isr:        
+usartd0_rx_isr:        
         PUSH_ALL                                                ; Save all registers and status register        
 
         LDS     R16,OSIntNestingCtr                             ; Notify uC/OS-III of ISR
@@ -164,7 +164,7 @@ usartf0_rx_isr:
         STS     OSIntNestingCtr,R16                             ;
 
         CPI     R16,1                                           ; if (OSIntNesting == 1) {
-        BRNE    usartf0_rx_isr_1
+        BRNE    usartd0_rx_isr_1
 
         SAVE_SP				                                    ; X = SP 		
 		LDS     R28,OSTCBCurPtr                                 ; OSTCBCur->OSTCBStkPtr = X
@@ -174,8 +174,8 @@ usartf0_rx_isr:
         ST      Y+,R27                                          ; }
 
 
-usartf0_rx_isr_1:
-        CALL    usartf0_rx_isr_handler                          ; Call Handler written in C
+usartd0_rx_isr_1:
+        CALL    usartd0_rx_isr_handler                          ; Call Handler written in C
 
         CALL    OSIntExit                                       ; Notify uC/OS-III about end of ISR
 
